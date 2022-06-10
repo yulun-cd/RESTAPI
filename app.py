@@ -3,14 +3,15 @@ from flask_restful import Api
 from flask_jwt import JWT
 
 from security import authenticate, identity
-from user import UserRegister
-from item import Item, ItemList
+from resources.user import UserRegister
+from resources.item import Item, ItemList
 
 
 app = Flask(__name__)
 app.secret_key = 'koopa'
 api = Api(app)
 
+app.config['JWT_AUTH_URL_RULE'] = '/login'
 jwt = JWT(app, authenticate, identity)
 
 api.add_resource(Item, '/item/<string:name>')
