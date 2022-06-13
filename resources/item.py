@@ -12,14 +12,12 @@ class Item(Resource):
                         type=float, 
                         required=True, 
                         help='This field cannot be left blank!')
-        
     
     @jwt_required() # authentification needed
     def get(self, name):
         item = ItemModel.find_by_name(name)
         if item: return item.json()
         return {'message': 'Item not found!'}, 404
-    
     
     def post(self, name):
         if ItemModel.find_by_name(name):
@@ -36,7 +34,6 @@ class Item(Resource):
         
         return item.json(), 201
     
-    
     def delete(self, name):
         connection = sqlite3.connect('data.db')
         cursor = connection.cursor()
@@ -48,7 +45,6 @@ class Item(Resource):
         connection.close()
         
         return {'message': 'Item deleted'}
-    
     
     def put(self, name):
         data = Item.parser.parse_args()
@@ -67,10 +63,10 @@ class Item(Resource):
             except:
                 return {'message': 'An error occurred updating the item.'}, 500
         return updated.json()
-    
 
 
 class ItemList(Resource):
+    
     def get(self):
         connection = sqlite3.connect('data.db')
         cursor = connection.cursor()

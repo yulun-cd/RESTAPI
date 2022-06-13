@@ -3,6 +3,7 @@ from flask_restful import Resource, reqparse
 
 from models.user import UserModel
 
+
 class UserRegister(Resource):
     
     parser = reqparse.RequestParser()
@@ -14,7 +15,6 @@ class UserRegister(Resource):
                         type=str, 
                         required=True,
                         help='Invalid password!')
-    
     
     def post(self):
         data = UserRegister.parser.parse_args()
