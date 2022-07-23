@@ -22,7 +22,7 @@ class ItemModel(db.Model):
             'name': self.name, 
             'price': self.price, 
             'store_id': self.store_id
-            }
+        }
     
     @classmethod
     def find_by_name(cls, name):
