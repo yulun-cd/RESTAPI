@@ -1,3 +1,6 @@
+import os
+import re
+
 from flask import Flask
 from flask_restful import Api
 from flask_jwt import JWT
@@ -14,7 +17,12 @@ app.secret_key = 'koopa'
 api = Api(app)
 
 app.config['JWT_AUTH_URL_RULE'] = '/login'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+
+uri = os.getenv('DATABASE_URL', 'sqlite:///data.db')
+if uri.startswith('postgres://'):
+    uri = uri.replace('postgres://', 'postgresql://', 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 jwt = JWT(app, authenticate, identity)
     
