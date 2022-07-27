@@ -1,10 +1,10 @@
 import os
 import re
-from tokenize import Token
 
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from blacklist import BLACKLIST
 
 from resources.user import UserRegister, User, UserLogin, TokenRefresh
 from resources.item import Item, ItemList
@@ -33,6 +33,10 @@ def add_claims_to_jwt(identity):
     if identity == 1:
         return {'is_admin': True}
     return {'is_admin': False}
+
+@jwt.user_in_blocklist_loader
+def is_user_in_blacklist(decrypted_token):
+    return decrypted_token['identity'] in BLACKLIST
     
 api.add_resource(Item, '/item/<string:name>')
 api.add_resource(Store, '/store/<string:name>')
