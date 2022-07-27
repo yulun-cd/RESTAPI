@@ -1,22 +1,22 @@
+from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_restful import Resource, reqparse
 
 from models.user import UserModel
 
-
-class UserRegister(Resource):
+_user_parser = reqparse.RequestParser()
+_user_parser.add_argument('username', 
+                          type=str,
+                          required=True, 
+                          help='Username required!')
+_user_parser.add_argument('password', 
+                          type=str, 
+                          required=True,
+                          help='Invalid password!')
     
-    parser = reqparse.RequestParser()
-    parser.add_argument('username', 
-                        type=str,
-                        required=True, 
-                        help='Username required!')
-    parser.add_argument('password', 
-                        type=str, 
-                        required=True,
-                        help='Invalid password!')
     
+class UserRegister(Resource):    
     def post(self):
-        data = UserRegister.parser.parse_args()
+        data = _user_parser.parse_args()
         
         if UserModel.find_by_username(data['username']):
             return {'message': 'Username already exists!'}, 400
@@ -42,3 +42,25 @@ class User(Resource):
             return {'message': 'User not found'}, 404
         user.delete_from_db()
         return {'message': 'User deleted'}, 200
+    
+    
+class UserLogin(Resource):    
+    def post(self):
+        # get data from the parser
+        data = _user_parser.parse_args()
+        
+        # find the user in the database
+        user = UserModel.find_by_username(data['username'])
+        
+        # check the password
+        if user and user.password == data['password']:
+            # create access token
+            access_token = create_access_token(identity=user.id, fresh=True)
+            # create refresh token
+            refresh_token = create_refresh_token(user.id)
+            return {
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }, 200
+            
+        return {'message': 'Invalid credentials'}, 401
