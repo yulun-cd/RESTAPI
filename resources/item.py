@@ -16,10 +16,11 @@ class Item(Resource):
                         required=True, 
                         help='Please provide a store id!')
     
-    @jwt_required # authentification needed
+    @jwt_required() # authentification needed
     def get(self, name):
         item = ItemModel.find_by_name(name)
-        if item: return item.json()
+        if item: 
+            return item.json()
         return {'message': 'Item not found!'}, 404
     
     def post(self, name):
